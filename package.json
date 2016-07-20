@@ -1,6 +1,6 @@
 {
   "name": "nxus-storage",
-  "version": "3.0.0-0",
+  "version": "3.0.0-1",
   "description": "Storage framework for Nxus applications",
   "main": "lib/",
   "scripts": {
@@ -25,7 +25,7 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nxus/storage/issues"
-  }, 
+  },
   "babel": {
     "presets": [
       "es2015"
