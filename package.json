@@ -11,7 +11,7 @@
     "prepublish": "npm run compile",
     "postpublish": "npm run build-docs && npm run publish-docs",
     "build-docs": "export NAME=`npm view . name`; export VERSION=`npm view . version`; documentation readme ./src/index.js --name $NAME --project-version $VERSION --readme-file ./README.md -s $NAME",
-    "publish-docs": "npm run build-docs && git add ./README.md && git commit -m 'Updated README API Docs' && git push"
+    "publish-docs": "npm run build-docs && if [ -z `git diff --name-only ./README.md` ]; then exit 0; fi && git add ./README.md && git commit -m 'Updated README API Docs' && git push"
   },
   "repository": {
     "type": "git",
