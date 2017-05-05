@@ -114,6 +114,7 @@ class Storage extends NxusModule {
     this.waterlineConfig = null;
     this.collections = {};
     this.connections = null;
+    this._adapters = {}
 
     application.once('init', () => {
       return Promise.all([
@@ -181,10 +182,12 @@ class Storage extends NxusModule {
     try {
       fs.accessSync(dir);
     } catch (e) {
+      this.log.debug('modelDir skipping:', dir)
       return;
     }
     let identities = []
     return fs.readdirAsync(dir).each((file) => {
+      this.log.debug('modelDir readdir checking', file)
       if (REGEX_FILE.test(file)) {
         var p = path.resolve(path.join(dir,path.basename(file, '.js')))
         var m = require(p)
@@ -204,16 +207,23 @@ class Storage extends NxusModule {
   _setupAdapter () {
     for (var key in this.config.adapters) {
       if (_.isString(this.config.adapters[key])) {
-        var adapter = require(this.config.adapters[key]);
-        adapter._name = this.config.adapters[key]
-        this.config.adapters[key] = adapter;
+        try {
+          var adapter = require(this.config.adapters[key]);
+          this.log.debug('_setupAdapter ', this.config.adapters[key])
+          adapter['_name'] = this.config.adapters[key]
+          this._adapters[key] = adapter;
+        } catch (err) {
+          this.log.error('_setupAdapter config for', key, 
+            'adapter:', this.config.adapters[key], 
+            'not found in installed dependencies.' )
+        }
       }
     }
   }
 
   _disconnectDb () {
-    var adapters = _.values(this.config.adapters).map(e => e['_name']);
-    return Promise.all(_.values(this.config.adapters), (adapter) => {
+    var adapterNames = _.values(this._adapters).map(e => e['_name']);
+    return Promise.all(_.values(this._adapters), (adapter) => {
       return new Promise((resolve) => {
         adapter.teardown(null, resolve);
       });
@@ -223,9 +233,9 @@ class Storage extends NxusModule {
       return new Promise((resolve) => {
         // we only want to reload nxus code
         // but we need to always reload mongoose so that models can be rebuilt
-        adapters = new RegExp("^.*("+adapters.join("|")+").*.js")
+        let adaptersExp = new RegExp("^.*("+adapterNames.join("|")+")\\"+path.sep+".*.js")
         _.each(require.cache, (v, k) => {
-          if (!adapters.test(k)) return
+          if (!adaptersExp.test(k)) return
           delete require.cache[k]
         })
         resolve()
@@ -236,7 +246,7 @@ class Storage extends NxusModule {
   _connectDb () {
     this.log.debug('Connecting to dB', this.config.connections)
     return this.waterline.initializeAsync({
-      adapters: this.config.adapters,
+      adapters: this._adapters,
       connections: this.config.connections,
       defaults: this.config.defaults
     }).then((obj) => {
