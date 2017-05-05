@@ -182,12 +182,11 @@ class Storage extends NxusModule {
     try {
       fs.accessSync(dir);
     } catch (e) {
-      this.log.debug('modelDir skipping:', dir)
+      this.log.debug('modelDir skipping:', dir, e.message)
       return;
     }
     let identities = []
     return fs.readdirAsync(dir).each((file) => {
-      this.log.debug('modelDir readdir checking', file)
       if (REGEX_FILE.test(file)) {
         var p = path.resolve(path.join(dir,path.basename(file, '.js')))
         var m = require(p)
@@ -195,6 +194,7 @@ class Storage extends NxusModule {
           m = m.default
         }
         identities.push(m.prototype.identity)
+        this.log.debug('modelDir adding model', file)
         return this.provide('model', m)
       }
     }).then(() => {
@@ -209,7 +209,6 @@ class Storage extends NxusModule {
       if (_.isString(this.config.adapters[key])) {
         try {
           var adapter = require(this.config.adapters[key]);
-          this.log.debug('_setupAdapter ', this.config.adapters[key])
           adapter['_name'] = this.config.adapters[key]
           this._adapters[key] = adapter;
         } catch (err) {
