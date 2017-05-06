@@ -8,7 +8,6 @@
 import BaseModel from './BaseModel'
 import Promise from 'bluebird'
 
-import traverse from 'traverse'
 import _ from "underscore"
 
 function createPoint(values, next) {

@@ -1,14 +1,51 @@
+/* globals before: false, beforeEach: false, after: false, afterEach: false, describe: false, it: false, expect: false */
 'use strict';
 
 import Storage from '../'
 import {storage as storageProxy} from '../'
-import {Waterline, HasModels, BaseModel, GeoModel} from '../'
+import {Waterline, BaseModel, GeoModel} from '../'
 
 import sinon from 'sinon'
 import {application as app} from 'nxus-core'
 
 import One from './models/One'
 import Two from './models/Two'
+
+// example from RFC 7946, section 1.5
+const geoJSONPoint = { 'type': 'Point', 'coordinates': [102.0, 0.5] },
+      geoJSONLineString = { 'type': 'LineString',
+        'coordinates': [ [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0] ] },
+      geoJSONPolygon = { 'type': 'Polygon',
+        'coordinates': [ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ] },
+      geoJSON = { 'type': 'FeatureCollection',
+        'features': [
+          { 'type': 'Feature',
+            'geometry': geoJSONPoint,
+            'properties': { 'prop0': 'value0' } },
+          { 'type': 'Feature',
+            'geometry': geoJSONLineString,
+             'properties': { 'prop0': 'value0', 'prop1': 0.0 } },
+          { 'type': 'Feature',
+            'geometry': geoJSONPolygon,
+            'properties': { 'prop0': 'value0', 'prop1': { 'this': 'that' } } }
+        ]
+      },
+      geoJSONGeometry = { 'type': 'GeometryCollection',
+        'geometries': [ geoJSONPolygon, geoJSONPoint, geoJSONLineString ] },
+      geoJSONCentroid = { 'type': 'Point', 'coordinates': [ 102.0, 0.5 ] }
+
+// these are slightly larger than the area covered by the geoJSONGeometry - seems to be necessary; probably issues with spherical geometry
+const surroundCoord = { 'type': 'Polygon',
+      'coordinates': [ [ [99.5, -0.5], [105.5, -0.5], [105.5, 1.5], [99.5, 1.5], [99.5, -0.5] ] ] }
+const intersectCoord = { 'type': 'Polygon',
+      'coordinates': [ [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ] }
+const throughCoord = { 'type': 'LineString',
+      'coordinates': [ [100.0, 0.5], [105.0, 0.5] ] }
+const multiSurroundCoord = { 'type': 'MultiPolygon',
+      'coordinates': [
+        [ [ [99.5, -0.5], [101.5, -0.5], [101.5, 1.5], [99.5, 1.5], [99.5, -0.5] ] ],
+        [ [ [101.5, -0.5], [105.5, -0.5], [105.5, 1.5], [101.5, 1.5], [101.5, -0.5] ] ] ] }
+
 
 describe("Storage", () => {
   var storage;
@@ -230,44 +267,60 @@ describe("Storage", () => {
     })
   });
   describe("Model Geo class", () => {
+    const Geo = GeoModel.extend({
+      identity: 'geo',
+      attributes: {
+        'location': 'json',
+        'locationFeatures': 'json',
+      },
+      geometryField: 'location',
+      geometryFeatureField: 'locationFeatures'
+    })
+    const record = {
+      'location': geoJSON }
+
     beforeEach(() => {
       storage.config = {
         adapters: {
-          "default": "sails-memory"
+          "default": "sails-mongo"
         },
         connections: {
           'default': {
-            adapter: 'default'
+            adapter: 'default',
+            url: 'mongodb://localhost/nxus-storage-test'
           }
         }
       }
-      var Geo = GeoModel.extend({
-        identity: 'geo',
-        attributes: {
-          'geo': 'json',
-          'geo_features': 'array',
-        }
-      })
       storage._setupAdapter()
       storage.model(Geo)
-      return storage._connectDb()
-    });
+      return storage._connectDb().then(() => {
+        var geo = storage.getModel('geo')
+        return geo.destroy({})
+      })
+    })
 
     afterEach(() => {
       return storage._disconnectDb()
     })
+
     it("should return models with correct methods inherited", () => {
       var geo = storage.getModel('geo')
       geo.should.have.property('createGeoIndex')
       geo.should.have.property('findWithin')
       geo.should.have.property('findIntersects')
     })
+
+    it("should create Geo index", () => {
+      var geo = storage.getModel('geo')
+      return geo.createGeoIndex()
+    })
+
     it("should emit CRUD events", () => {
       var geo = storage.getModel('geo')
-      return geo.create({geo: {features: []}}).then((obj) => {
+      return geo.create(record).then((obj) => {
         storage.emit.calledWith('model.create').should.be.true
         storage.emit.calledWith('model.create.geo').should.be.true
-        obj.geo = {}
+        obj.location = null
         return obj.save()
           .then(() => obj) // save doesn't return object as of waterline 0.11.0
       }).then((obj) => {
@@ -278,7 +331,135 @@ describe("Storage", () => {
         storage.emit.calledWith('model.destroy').should.be.true
         storage.emit.calledWith('model.destroy.geo').should.be.true
       })
+    })
+
+    it("should manage features property", () => {
+      var geo = storage.getModel('geo')
+      return geo.create(record).then((obj) => {
+        expect(obj).to.exist
+        obj.should.have.property('id')
+        obj.should.have.property('createdAt')
+        obj.should.have.property('updatedAt')
+        expect(obj.location).to.deep.equal(geoJSON)
+        expect(obj.locationFeatures).to.deep.equal(geoJSONGeometry)
+        obj.location = null
+        return obj.save().then(() => geo.findOne({id: obj.id}))
+      }).then((obj) => {
+        expect(obj).to.exist
+        expect(obj.location).to.be.null
+        expect(obj.locationFeatures).to.be.null
+        return obj.destroy().then(() => geo.findOne({id: obj.id}))
+      }).then((obj) => {
+        expect(obj).to.be.undefined
+      })
+    })
+
+    describe("Model Geo class findWithin() and findIntersects() methods", () => {
+      var geo, obj
+
+      beforeEach(() => {
+        geo = storage.getModel('geo')
+        return geo.create(record).then((rslt) => { obj = rslt })
+      })
+      afterEach(() => {
+        return obj.destroy()
+      })
+
+      it("findWithin() should find entity within coordinates", () => {
+        return geo.findWithin(surroundCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findWithin() should find entity within MultiPolygon coordinates", () => {
+        return geo.findWithin(multiSurroundCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findWithin() should not find entity intersecting coordinates", () => {
+        return geo.findWithin(intersectCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 0)
+        })
+      })
+
+      it("findIntersects() should find entity within coordinates", () => {
+        return geo.findIntersects(surroundCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findIntersects() should find entity intersecting coordinates", () => {
+        return geo.findIntersects(intersectCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findIntersects() should find entity lined through coordinates", () => {
+        return geo.findIntersects(throughCoord).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findIntersects() should find entity matching GeometryCollection coordinates", () => {
+        return geo.findIntersects(geoJSONGeometry).then((query) => {
+          return query()
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
 
     })
+
+    describe("Model Geo class getGeometry() and getCentroid() methods", () => {
+      var geo, obj
+
+      beforeEach(() => {
+        geo = storage.getModel('geo')
+        return geo.create(record).then((rslt) => { obj = rslt })
+      })
+      afterEach(() => {
+        return obj.destroy()
+      })
+
+      it("getGeometry(obj) should find Polygon objects", () => {
+        let geometry = geo.getGeometry(obj)
+        expect(geometry).to.be.instanceof(Object)
+        expect(geometry).to.deep.equal(geoJSONPolygon)
+      })
+
+      it("getGeometry(obj, 'Polygon', 'Point', 'LineString') should find all geometry objects", () => {
+        let geometry = geo.getGeometry(obj, 'Polygon', 'Point', 'LineString')
+        expect(geometry).to.be.instanceof(Object)
+        expect(geometry).to.deep.equal(geoJSONGeometry)
+      })
+
+      it("getCentroid(obj) should find centroid", () => {
+        let centroid = geo.getCentroid(obj)
+        expect(centroid).to.be.instanceof(Object)
+        expect(centroid).to.deep.equal(geoJSONCentroid)
+      })
+
+    })
+
   });
 });
