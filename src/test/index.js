@@ -286,6 +286,7 @@ describe("Storage", () => {
     const Geo = GeoModel.extend({
       identity: 'geo',
       attributes: {
+        'name': 'string',
         'location': 'json',
         'locationFeatures': 'json',
       },
@@ -441,6 +442,41 @@ describe("Storage", () => {
         }).then((rslts) => {
           expect(rslts).to.be.instanceof(Array)
           rslts.should.have.property('length', 1)
+        })
+      })
+
+    })
+
+    describe("Model Geo class findWithin() method with .where() clause", () => {
+      var geo, obj
+
+      const record = {
+        'name': "whatever",
+        'location': geoJSON }
+
+      beforeEach(() => {
+        geo = storage.getModel('geo')
+        return geo.create(record).then((rslt) => { obj = rslt })
+      })
+      afterEach(() => {
+        return obj.destroy()
+      })
+
+      it("findWithin() should find entity within coordinates", () => {
+        return geo.findWithin(surroundCoord).then((query) => {
+          return query().where({name: "whatever"})
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 1)
+        })
+      })
+
+      it("findWithin() should not find entity intersecting coordinates", () => {
+        return geo.findWithin(intersectCoord).then((query) => {
+          return query().where({name: "whatever"})
+        }).then((rslts) => {
+          expect(rslts).to.be.instanceof(Array)
+          rslts.should.have.property('length', 0)
         })
       })
 

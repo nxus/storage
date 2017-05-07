@@ -276,7 +276,9 @@ const GeoModel = BaseModel.extend(
           if(err) { reject(err); return }
           collection.find(geoQuery, {_id: 1}).toArray((err, objs) => {
             if(err) { reject(err); return }
-            let wlQuery = { 'id': _.pluck(objs, '_id') }
+            let ids = _.pluck(objs, '_id'),
+                wlQuery = { 'id': (ids.length > 0) ? ids : "" }
+                  // FIX ME: Waterline (^0.12.2) ignores criteria with empty array, at least when combined with additional .where() clause
             resolve(() => { return this.find(wlQuery)})
           })
         })
