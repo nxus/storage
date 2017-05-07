@@ -2,6 +2,7 @@ import BaseModel from './BaseModel'
 import Promise from 'bluebird'
 
 import _ from "underscore"
+import rewind from 'geojson-rewind'
 import turf from '@turf/meta'
 import turfCentroid from '@turf/centroid'
 turf.centroid = turfCentroid
@@ -13,12 +14,12 @@ turf.centroid = turfCentroid
  * undefined.
  * @private
  */
-function cleanPolygon(polygon) {
+function cleanPolygon(coordinates) {
   function near(v1, v2) { return Math.abs(v1 - v2) < 0.000001 } // about 10 cm
   function same(c1, c2) { return near(c1[0], c2[0]) && near(c1[1], c2[1]) }
 
   let rslt = []
-  polygon.forEach((ring, index) => {
+  coordinates.forEach((ring, index) => {
     ring = ring.reduce((acc, val, idx) => {
       if ((idx === 0) || !same(acc[acc.length - 1], val)) acc.push(val)
       return acc
@@ -29,6 +30,18 @@ function cleanPolygon(polygon) {
     if (ring || (index === 0)) rslt.push(ring)
   })
   return rslt[0] && rslt
+}
+
+function cleanGeometryCoordinates(parts) {
+  let cleaned = []
+  parts.Polygon.forEach((coordinates) => {
+    coordinates = cleanPolygon(coordinates)
+    if (coordinates) {
+      let obj = rewind({type: 'Polygon', coordinates})
+      cleaned.push(obj.coordinates)
+    }
+  })
+  parts.Polygon = cleaned
 }
 
 /** Extracts geometry coordinates from a GeoJSON object.
@@ -49,10 +62,10 @@ function extractGeometryCoordinates(obj) {
   function extract(node) {
     switch (node.type) {
     case 'Polygon':
-      save('Polygon', cleanPolygon(node.coordinates))
+      save('Polygon', node.coordinates)
       break
     case 'MultiPolygon':
-      if (node.coordinates) node.coordinates.forEach((coordinates) => { save('Polygon', cleanPolygon(coordinates)) })
+      if (node.coordinates) node.coordinates.forEach((coordinates) => { save('Polygon', coordinates) })
       break
     case 'Point':
       save('Point', node.coordinates)
@@ -107,7 +120,9 @@ function extractGeometryFeatures(values, next) {
   if (val !== undefined) {
     try {
       if (_.isString(val)) val = JSON.parse(val)
-      geo = assembleGeometryObject(extractGeometryCoordinates(val))
+      let parts = extractGeometryCoordinates(val)
+      cleanGeometryCoordinates(parts)
+      geo = assembleGeometryObject(parts)
     }
     catch (e) {} // FIX ME: should this cause create/update to fail?
     values[this.geometryFeatureField] = geo || null

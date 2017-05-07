@@ -11,7 +11,7 @@ import {application as app} from 'nxus-core'
 import One from './models/One'
 import Two from './models/Two'
 
-// example from RFC 7946, section 1.5
+// example from RFC 7946, section 1.5 (deconstructed and reassembled)
 const geoJSONPoint = { 'type': 'Point', 'coordinates': [102.0, 0.5] },
       geoJSONLineString = { 'type': 'LineString',
         'coordinates': [ [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0] ] },
@@ -33,6 +33,22 @@ const geoJSONPoint = { 'type': 'Point', 'coordinates': [102.0, 0.5] },
       geoJSONGeometry = { 'type': 'GeometryCollection',
         'geometries': [ geoJSONPolygon, geoJSONPoint, geoJSONLineString ] },
       geoJSONCentroid = { 'type': 'Point', 'coordinates': [ 102.0, 0.5 ] }
+
+// does not follow the right-hand rule; missing closure point
+const geoJSONMess = { 'type': 'Polygon',
+        'coordinates' : [ [
+          [ -78.81248474121094, 35.68853320738875 ],
+          [ -78.81248474121094, 35.862343734896484 ],
+          [ -78.45817565917967, 35.862343734896484 ],
+          [ -78.45817565917967, 35.68853320738875 ] ] ] },
+      geoJSONCleaned =  { 'type': 'Polygon',
+        'coordinates' : [ [
+          [ -78.81248474121094, 35.68853320738875 ],
+          [ -78.45817565917967, 35.68853320738875 ],
+          [ -78.45817565917967, 35.862343734896484 ],
+          [ -78.81248474121094, 35.862343734896484 ],
+          [ -78.81248474121094, 35.68853320738875 ] ] ] }
+
 
 // these are slightly larger than the area covered by the geoJSONGeometry - seems to be necessary; probably issues with spherical geometry
 const surroundCoord = { 'type': 'Polygon',
@@ -457,6 +473,28 @@ describe("Storage", () => {
         let centroid = geo.getCentroid(obj)
         expect(centroid).to.be.instanceof(Object)
         expect(centroid).to.deep.equal(geoJSONCentroid)
+      })
+
+    })
+
+    describe("Model Geo class Polygon cleanup", () => {
+      var geo, obj
+
+      const record = {
+        'location': geoJSONMess }
+
+      beforeEach(() => {
+        geo = storage.getModel('geo')
+        return geo.create(record).then((rslt) => { obj = rslt })
+      })
+      afterEach(() => {
+        return obj.destroy()
+      })
+
+      it("getGeometry(obj, 'Polygon', 'Point', 'LineString') should return cleaned geometry objects", () => {
+        let geometry = geo.getGeometry(obj, 'Polygon', 'Point', 'LineString')
+        expect(geometry).to.be.instanceof(Object)
+        expect(geometry).to.deep.equal(geoJSONCleaned)
       })
 
     })

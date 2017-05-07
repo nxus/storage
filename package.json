@@ -33,6 +33,7 @@
     "@turf/centroid": "^4.2.0",
     "@turf/meta": "^4.2.0",
     "bluebird": "^3.0.6",
+    "geojson-rewind": "^0.2.0",
     "nxus-core": "^4.0.0-0",
     "underscore": "^1.8.3",
     "waterline": "^0.12.2",
