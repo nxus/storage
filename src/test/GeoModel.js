@@ -120,7 +120,7 @@ describe("Storage", () => {
       return storage._disconnectDb()
     })
 
-    it.skip("should return models with correct methods inherited", () => {
+    it("should return models with correct methods inherited", () => {
       var geo = storage.getModel('geo')
       geo.should.have.property('createGeoIndex')
       geo.should.have.property('findWithin')
@@ -132,7 +132,7 @@ describe("Storage", () => {
       return geo.createGeoIndex()
     })
 
-    it.skip("should emit CRUD events", () => {
+    it("should emit CRUD events", () => {
       var geo = storage.getModel('geo')
       return geo.create(record).then((obj) => {
         storage.emit.calledWith('model.create').should.be.true
@@ -150,7 +150,7 @@ describe("Storage", () => {
       })
     })
 
-    it.skip("should manage features property", () => {
+    it("should manage features property", () => {
       var geo = storage.getModel('geo')
       return geo.create(record).then((obj) => {
         expect(obj).to.exist
@@ -171,7 +171,7 @@ describe("Storage", () => {
       })
     })
 
-    describe.skip("Model Geo class findWithin() and findIntersects() methods", () => {
+    describe("Model Geo class findWithin() and findIntersects() methods", () => {
       var geo, obj
 
       beforeEach(() => {
@@ -247,7 +247,7 @@ describe("Storage", () => {
 
     })
 
-    describe.skip("Model Geo class findIntersects() with MultiPoint and MultiPolygon", () => {
+    describe("Model Geo class findIntersects() with MultiPoint and MultiPolygon", () => {
       var geo, objs
 
       const records = [
@@ -323,7 +323,7 @@ describe("Storage", () => {
 
     })
 
-    describe.skip("Model Geo class findWithin() method with .where() clause", () => {
+    describe("Model Geo class findWithin() method with .where() clause", () => {
       var geo, obj
 
       const record = {
@@ -358,7 +358,7 @@ describe("Storage", () => {
 
     })
 
-    describe.skip("Model Geo class getGeometry() and getCentroid() methods", () => {
+    describe("Model Geo class getGeometry() and getCentroid() methods", () => {
       var geo, obj
 
       beforeEach(() => {
@@ -407,7 +407,7 @@ describe("Storage", () => {
 
     })
 
-    describe.skip("Model Geo class Polygon cleanup", () => {
+    describe("Model Geo class Polygon cleanup", () => {
       var geo, obj
 
       const record = {
