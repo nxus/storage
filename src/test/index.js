@@ -46,7 +46,7 @@ describe("Storage", () => {
     it("should register app load event", () => app.onceAfter.calledWith('load').should.be.true)
     it("should register app stop event", () => app.once.calledWith('stop').should.be.true)
     //fire both the init and load, then check state of internal configuration
-    it("should have config after application 'init' and 'load'", (done) => {
+    it("should have config after application 'init' and 'load'", () => {
       return app.emit('init').then(() => {
         return app.emit('load')
       }).then(() => {
@@ -55,7 +55,6 @@ describe("Storage", () => {
         storage.config.should.have.property('connections');
         storage.should.have.property('connections');
         storage.connections.should.not.be.null
-        done()
       });
     }).timeout(3000);
   });
