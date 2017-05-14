@@ -85,6 +85,7 @@ describe("Storage", () => {
   describe("Model Geo class", () => {
     const Geo = GeoModel.extend({
       identity: 'geo',
+      connection: 'nxus-storage-test',
       attributes: {
         'name': 'string',
         'location': 'json',
@@ -99,11 +100,11 @@ describe("Storage", () => {
     beforeEach(() => {
       storage.config = {
         adapters: {
-          "default": "sails-mongo"
+          "mongo": "sails-mongo"
         },
         connections: {
-          'default': {
-            adapter: 'default',
+          'nxus-storage-test': {
+            adapter: 'mongo',
             url: 'mongodb://localhost/nxus-storage-test'
           }
         }
