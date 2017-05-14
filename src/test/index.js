@@ -21,6 +21,8 @@ describe("Storage", () => {
     sinon.spy(storageProxy, "respond")
     sinon.spy(storageProxy, "request")
   })
+
+  //nb: these tests are order dependent right now
  
   describe("Load", () => {
     it("should not be null", () => Storage.should.not.be.null)
@@ -33,25 +35,29 @@ describe("Storage", () => {
     })
 
     it("should be instantiated", () => {
-      storage = new Storage(app);
+      storage = new Storage();
       storage.should.not.be.null;
     });
   });
 
   describe("Init", () => {
-    it("should register for app lifecycle", () => {
-      app.once.called.should.be.true;
-      app.onceAfter.calledWith('load').should.be.true;
-      app.once.calledWith('init').should.be.true;
-      app.once.calledWith('stop').should.be.true;
-    });
-
-    it("should have config after load", () => {
-      return app.emit('load').then(() => {
+    it("should register for app lifecycle", () => app.once.called.should.be.true)
+    it("should register app init event", () => app.once.calledWith('init').should.be.true)
+    it("should register app load event", () => app.onceAfter.calledWith('load').should.be.true)
+    it("should register app stop event", () => app.once.calledWith('stop').should.be.true)
+    //fire both the init and load, then check state of internal configuration
+    it("should have config after application 'init' and 'load'", (done) => {
+      return app.emit('init').then(() => {
+        return app.emit('load')
+      }).then(() => {
+        storage._adapters.should.have.property('default');
         storage.should.have.property('config');
         storage.config.should.have.property('connections');
+        storage.should.have.property('connections');
+        storage.connections.should.not.be.null
+        done()
       });
-    });
+    }).timeout(3000);
   });
   describe("Models", () => {
     before(() => {
@@ -77,6 +83,7 @@ describe("Storage", () => {
           name: 'string'
         }
       });
+
       // Shortcut around gather stub
       storage.model(Dummy)
       storage._setupAdapter()
@@ -97,6 +104,7 @@ describe("Storage", () => {
       dummy.should.exist
       dummy.identity.should.equal('dummy')
     });
+    
 
   });
   describe("Model Dir", () => {
@@ -151,7 +159,7 @@ describe("Storage", () => {
     })
 
     it("should have required the adapter", (done) => {
-      storage.config.adapters["default"].should.have.property("identity", "sails-memory");
+      storage._adapters["default"].should.have.property("identity", "sails-memory");
       done()
     });
   });
