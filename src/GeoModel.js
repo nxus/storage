@@ -119,6 +119,12 @@ function assembleGeometryObject(parts) {
         geometries[0]
 }
 
+/** Waterline lifecycle callback to synchronize geometry features field.
+ * Invoked at `beforeCreate` and `beforeUpdate`. If the geometry field
+ * is being created or updated, it assigns a corresponding value to the
+ * geometry features field.
+ * @private
+ */
 function extractGeometryFeatures(values, next) {
   let val = values[this.geometryField], geo
   if (val !== undefined) {
