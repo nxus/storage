@@ -11,7 +11,7 @@ turf.centroid = turfCentroid
  * For each linear ring that defines the polygon, it removes repeated
  * coordinates, ensures ring is closed. It discards rings with less than
  * four points, and if the outer ring is discarded the polygon becomes
- * undefined.
+ * undefined. It ensures the rings have correct winding order.
  * @private
  */
 function cleanPolygon(coordinates) {
@@ -29,17 +29,21 @@ function cleanPolygon(coordinates) {
     if (ring.length < 4) ring = undefined
     if (ring || (index === 0)) rslt.push(ring)
   })
+  if (rslt[0]) {
+    let obj = rewind({type: 'Polygon', coordinates: rslt})
+    rslt = obj.coordinates
+  }
   return rslt[0] && rslt
 }
 
+/** Ensures Polygon coordinates are valid GeoJSON.
+ * @private
+ */
 function cleanGeometryCoordinates(parts) {
   let cleaned = []
   parts.Polygon.forEach((coordinates) => {
     coordinates = cleanPolygon(coordinates)
-    if (coordinates) {
-      let obj = rewind({type: 'Polygon', coordinates})
-      cleaned.push(obj.coordinates)
-    }
+    if (coordinates) cleaned.push(coordinates)
   })
   parts.Polygon = cleaned
 }
@@ -140,8 +144,15 @@ function extractGeometryFeatures(values, next) {
  * because the MongoDB 2dsphere index can handle only GeoJSON geometry
  * features, the index is applied to a derived _features_ field that
  * contains just the geometry features from the primary GeoJSON field.
+ *
  * The `GeoModel` provides the machinery for keeping the features field
- * synchronized with the primary GeoJSON field.
+ * synchronized with the primary GeoJSON field. It also attempts to
+ * ensure the features field is well-formed and has a consistent
+ * organization. For Polygon objects, it discards duplicate points,
+ * closes open paths and ensures clockwise winding order. It combines
+ * Geometry objects so there is at most one of each geometry type:
+ * Polygon/MultiPolygon, Point/MultiPoint and
+ * LineString/MultiLineString. 
  *
  * The `createGeoIndex()` method should be invoked to ensure the index
  * is created. Typically, after the startup lifecycle phase.
@@ -209,8 +220,8 @@ const GeoModel = BaseModel.extend(
      *
      * @example
      *   ```
-     *   model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((fn) => {
-     *     return fn().where(...).populate(...)
+     *   model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+     *     return query().where(...).populate(...)
      *   }).then((records) => {
      *     ...
      *   })
@@ -235,14 +246,15 @@ const GeoModel = BaseModel.extend(
      * Typical use is to extract `Polygon` geometry objects for use as
      * coordinates for the `findWithin()` or `findIntersects()` methods.
      * @param {Object} record - `GeoModel` record containing geographic field
-     * @param {...string} types - geometry types to include (default is `Polygon`)
+     * @param {...string} types - geometry types to include (default is
+     *   all types: `Polygon`, `Point` and `LineString`)
      * @returns {Object} GeoJSON geometry object; undefined if no
      *   matching geometry objects were present
      */
     getGeometry: function(record, ...types) {
       let val = record[this.geometryFeatureField], geo
       if (val) {
-        if (types.length === 0) types.push('Polygon')
+        if (types.length === 0) types = ['Polygon', 'Point', 'LineString']
         try {
           let parts = extractGeometryCoordinates(val)
           geo = assembleGeometryObject(_.pick(parts, types))
