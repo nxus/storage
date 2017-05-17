@@ -257,7 +257,7 @@ class Storage extends NxusModule {
   }
 
   emitModelEvent (action, identity, record) {
-    this.log.debug('Emitting model event', action, identity)
+    this.log.trace('Emitting model event', action, identity)
     this.emit('model.'+action, identity, record)
     this.emit('model.'+action+'.'+identity, identity, record)
   }
