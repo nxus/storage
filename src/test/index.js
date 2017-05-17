@@ -1,14 +1,16 @@
+/* globals before: false, beforeEach: false, after: false, afterEach: false, describe: false, it: false, expect: false */
 'use strict';
 
 import Storage from '../'
 import {storage as storageProxy} from '../'
-import {Waterline, HasModels, BaseModel, GeoModel} from '../'
+import {Waterline, BaseModel} from '../'
 
 import sinon from 'sinon'
 import {application as app} from 'nxus-core'
 
 import One from './models/One'
 import Two from './models/Two'
+
 
 describe("Storage", () => {
   var storage;
@@ -22,21 +24,6 @@ describe("Storage", () => {
 
   //nb: these tests are order dependent right now
  
-  // beforeEach(() => {
-  //   app = new TestApp();
-  //   app.config.storage = {
-  //     adapters: {
-  //       "default": "sails-memory"
-  //     },
-  //     modelsDir: './src/models',
-  //     connections: {
-  //       'default': {
-  //         adapter: 'default'
-  //       }
-  //     }
-  //   }
-  // });
-  
   describe("Load", () => {
     it("should not be null", () => Storage.should.not.be.null)
     it("should provide waterline", () => Waterline.should.not.be.null)
@@ -59,7 +46,7 @@ describe("Storage", () => {
     it("should register app load event", () => app.onceAfter.calledWith('load').should.be.true)
     it("should register app stop event", () => app.once.calledWith('stop').should.be.true)
     //fire both the init and load, then check state of internal configuration
-    it("should have config after application 'init' and 'load'", (done) => {
+    it("should have config after application 'init' and 'load'", () => {
       return app.emit('init').then(() => {
         return app.emit('load')
       }).then(() => {
@@ -68,7 +55,6 @@ describe("Storage", () => {
         storage.config.should.have.property('connections');
         storage.should.have.property('connections');
         storage.connections.should.not.be.null
-        done()
       });
     }).timeout(3000);
   });
@@ -233,58 +219,6 @@ describe("Storage", () => {
       }).then(() => {
         storage.emit.calledWith('model.destroy').should.be.true
         storage.emit.calledWith('model.destroy.one').should.be.true
-      })
-
-    })
-  });
-  describe("Model Geo class", () => {
-    beforeEach(() => {
-      storage.config = {
-        adapters: {
-          "default": "sails-memory"
-        },
-        connections: {
-          'default': {
-            adapter: 'default'
-          }
-        }
-      }
-      var Geo = GeoModel.extend({
-        identity: 'geo',
-        attributes: {
-          'geo': 'json',
-          'geo_features': 'array',
-        }
-      })
-      storage._setupAdapter()
-      storage.model(Geo)
-      return storage._connectDb()
-    });
-
-    afterEach(() => {
-      return storage._disconnectDb()
-    })
-    it("should return models with correct methods inherited", () => {
-      var geo = storage.getModel('geo')
-      geo.should.have.property('createGeoIndex')
-      geo.should.have.property('findWithin')
-      geo.should.have.property('findIntersects')
-    })
-    it("should emit CRUD events", () => {
-      var geo = storage.getModel('geo')
-      return geo.create({geo: {features: []}}).then((obj) => {
-        storage.emit.calledWith('model.create').should.be.true
-        storage.emit.calledWith('model.create.geo').should.be.true
-        obj.geo = {}
-        return obj.save()
-          .then(() => obj) // save doesn't return object as of waterline 0.11.0
-      }).then((obj) => {
-        storage.emit.calledWith('model.update').should.be.true
-        storage.emit.calledWith('model.update.geo').should.be.true
-        return obj.destroy()
-      }).then(() => {
-        storage.emit.calledWith('model.destroy').should.be.true
-        storage.emit.calledWith('model.destroy.geo').should.be.true
       })
 
     })
