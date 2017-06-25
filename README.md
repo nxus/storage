@@ -138,6 +138,19 @@ application.get('storage').model(...)
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Array of model identities
 
+### BaseModel
+
+BaseModel extends Waterline.Collection to provide the following defaults and methods:
+
+-   uses the 'default' connection
+-   merges attributes provided by subsequent base classes to share attribute definitions
+-   displayName() attribute property for consistent access to an object's "name"
+-   emit the nxus-storage CRUD events
+-   findOrCreate(criteria, values) - creates the object if it does not exist
+-   createOrUpdate(criteria, values) - creates the object, or updates if it exists
+
+You should almost always extend this or one of its subclasses when defining your models.
+
 ### GeoModel
 
 Base for Waterline models containing a GeoJSON geographic field.

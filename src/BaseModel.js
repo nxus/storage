@@ -1,6 +1,18 @@
 import Waterline from 'waterline'
 import _ from 'underscore'
 
+/**
+ * BaseModel extends Waterline.Collection to provide the following defaults and methods:
+ *  * uses the 'default' connection
+ *  * merges attributes provided by subsequent base classes to share attribute definitions
+ *  * displayName() attribute property for consistent access to an object's "name"
+ *  * emit the nxus-storage CRUD events
+ *  * findOrCreate(criteria, values) - creates the object if it does not exist
+ *  * createOrUpdate(criteria, values) - creates the object, or updates if it exists
+ *
+ * You should almost always extend this or one of its subclasses when defining your models.
+ */
+
 var BaseModel = Waterline.Collection.extend({
   connection: 'default',
   storageModule: null,
@@ -32,6 +44,16 @@ var BaseModel = Waterline.Collection.extend({
       this.storageModule.emitModelEvent('destroy', this.identity, record)
     }
     next()
+  },
+
+  findOrCreate: function(criteria, values) {
+    return this.findOne(criteria).then((obj) => {
+      if(obj) {
+        return obj
+      } else {
+        return this.create(values)
+      }
+    })
   },
   
   createOrUpdate: function(criteria, values) {
