@@ -7,8 +7,10 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - mongodb-3.0-precise
     packages:
     - g++-4.8
+    - mongodb-org-server
 notifications:
   slack:
     secure: aA+j794TCrrlvalDRdjEslzR2zubOSC+C/le66tUtGqS2MRaHWabYKtBmkP7xy3QJuTPt/t5HL8v7+CupYCu5sPjcXyrT/f/XYPrQq8XEeH4uqtHK3WewA8N9YTDtmfV8BrCkOZr+xDZ3Lll5QmNERegfhvwEkx40iE23/a3ORBjvNT3eoeD1oPeEodHKPfWPf2/Tx/g9wV5pqiN8B/2bu+QjdOpnt7uVX8cErCl/t7nJ+6/c0rmpCmATLTUODbEld/TOQ9xv0lEdkC5PdmP+Vgr1EX/SpZRs0bSl6Ef3OpmY+jIXtqcgkFh8e8Ny3J9Dc4Dm1lwgGcSvcvG1Gzs1kQHTznTekOiuDRvsC1PZ/iiE1XkM+AuIpncJP6dUbih1536UfUpNSDEXhOUOaw8oQPGcNygSiJBlhA+JcMKNoshRVUL9zRQxcGAhrGjJ77swwYW1+LQEHz2dgP4SmxIwRukVlpVhGUxPjAMbGxsCgEB7nC4rjsdHXBu1knMhiMxkAzpNyLPYEqLMMNcFjjHEuVLujDyxYt6rNmQ/My8YcohRg0e/lhPfbL9z9sZt3puiCrP5v3+23pJIow6ReADAMRRSzhTx1DFeb5DNAxhFS8Ma3d/arKLkecGSaL7VKNQOJMWKiOylx9FIVqZeEvbG8hnZumpUqrt9unU9V280tk=

@@ -22,14 +22,14 @@ describe("HasModels", () => {
 
   it("should request models", () => {
     module = new MyModule()
-    app.on.calledWith('startup').should.be.true;
-    app.emit('startup').then(() => {
+    app.on.calledWith('startup.before').should.be.true;
+    app.emit('startup.before').then(() => {
       storageProxy.provide.calledWith('getModel', 'user').should.be.true;
     })
   });
   it("should request models from object", () => {
     module = new MyModuleRename()
-    app.emit('startup').then(() => {
+    app.emit('startup.before').then(() => {
       storageProxy.provide.calledWith('getModel', 'user').should.be.true;
     })
   });
