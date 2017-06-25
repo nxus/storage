@@ -4,13 +4,19 @@ import _ from 'underscore'
 import {application, NxusModule} from 'nxus-core'
 import {storage} from './index'
 
-/** 
- * The HasModels class is a Base class for defining helper classes with Models.
- * All models contained in a `./models` directory will be registered automatically, and are the
- * default list of model identities made available in the `this.models` object.
- * You may override or extend this list of model identities, or a mapping of model identities to variable names,
- * by overriding `.modelNames()`
- * 
+/** Base class for nxus modules that define or use models.
+ * It automatically registers all model definitions contained in
+ * the module `./models` subdirectory. It makes model definitions
+ * available through its {@link #HasModels#models} property, which you
+ * can configure to load models defined by your module or other modules.
+ * @param {Object} options - Configuration options.
+ * @param {Object|Array} options.modelNames - Model definitions to load.
+ *       If specified as an object, each object property specifies a
+ *       model &ndash; its key is a model identity (the model's
+ *       `identity` property), and its value is used as the model's
+ *       name in {@link HasModels#models}. If specified as an array,
+ *       each array element specifies a model &ndash; the element
+ *       string serves as both model identity and name.
  */
 export default class HasModels extends NxusModule {
   constructor({modelNames=null}={}) {
@@ -37,9 +43,20 @@ export default class HasModels extends NxusModule {
     })
   }
 
-  /**
-   * Deprecated: Override to define the model names to access
-   * @return {array|object} Model identities to add to this.models, or object of {identity: name}
+  /** Collection of model definitions.
+   * You can use the constructor `modelNames` option to configure which
+   * model definitions to load. By default, the model definitions
+   * that were registered from the module `./models` subdirectory are
+   * also loaded into the model definitions.
+   *
+   * @member {Object} models
+   * @memberof HasModels
+   * @instance
+   */
+
+  /** Override to define the model names to access.
+   * @deprecated Use the constructor `modelNames` option to specify names of models to be made available in the `this.models` property.
+   * @return {Array|Object} Model identities to add to `this.models`, or object of {identity: name}
    * @example modelNames() { 
    *   return ['user']
    * }

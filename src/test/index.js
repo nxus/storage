@@ -169,7 +169,6 @@ describe("Storage", () => {
         adapters: {
           "default": "sails-memory"
         },
-        modelsDir: './test/models',
         connections: {
           'default': {
             adapter: 'default'
