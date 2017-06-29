@@ -1,1 +1,7 @@
+.babelrc
+.gitignore
+.npmignore
+.tmp
+.travis.yml
 src
+test
