@@ -18,6 +18,10 @@ function createPoint(values, next) {
   next()
 }
 
+/** Base collection for Waterline models containing a GeoJSON coordinate point attribute.
+ * @augments BaseModel
+ * @deprecated Use {@link GeoModel}.
+ */
 export default BaseModel.extend({
 
   // Lifecycle

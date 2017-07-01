@@ -1,6 +1,7 @@
 /* globals before: false, beforeEach: false, after: false, afterEach: false, describe: false, it: false, expect: false */
 'use strict'
 
+import Promise from 'bluebird'
 import Storage from '../'
 import {GeoModel} from '../'
 

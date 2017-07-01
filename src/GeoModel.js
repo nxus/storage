@@ -119,10 +119,10 @@ function assembleGeometryObject(parts) {
         geometries[0]
 }
 
-/** Waterline lifecycle callback to synchronize geometry features field.
- * Invoked at `beforeCreate` and `beforeUpdate`. If the geometry field
- * is being created or updated, it assigns a corresponding value to the
- * geometry features field.
+/** Waterline lifecycle callback to synchronize geometry features attribute.
+ * Invoked at `beforeCreate` and `beforeUpdate`. If the geometry
+ * attribute is being created or updated, it assigns a corresponding
+ * value to the geometry features attribute.
  * @private
  */
 function extractGeometryFeatures(values, next) {
@@ -140,34 +140,54 @@ function extractGeometryFeatures(values, next) {
   next()
 }
 
-/** Base for Waterline models containing a GeoJSON geographic field.
+/** Base class for Waterline models containing a GeoJSON geographic attribute.
  *
- * It provides methods for performing geo queries on the GeoJSON field
- * &ndash; `findWithin()` selects records that lie within specified
- * coordinates, and `findIntersects()` selects records that intersect.
+ * It provides methods for performing geo queries on the GeoJSON
+ * attribute &ndash; `findWithin()` selects records that lie within
+ * specified coordinates, and `findIntersects()` selects records that
+ * intersect.
  *
  * To implement the geo queries, the GeoJSON data must be indexed. And
  * because the MongoDB 2dsphere index can handle only GeoJSON geometry
- * features, the index is applied to a derived _features_ field that
- * contains just the geometry features from the primary GeoJSON field.
+ * features, the index is applied to a derived _features_ attribute that
+ * contains just the geometry features from the primary GeoJSON
+ * attribute.
  *
- * The `GeoModel` provides the machinery for keeping the features field
- * synchronized with the primary GeoJSON field. It also attempts to
- * ensure the features field is well-formed and has a consistent
- * organization. For Polygon objects, it discards duplicate points,
- * closes open paths and ensures clockwise winding order. It combines
- * Geometry objects so there is at most one of each geometry type:
- * Polygon/MultiPolygon, Point/MultiPoint and
+ * The `GeoModel` provides the machinery for keeping the features
+ * attribute synchronized with the primary GeoJSON attribute. It also
+ * attempts to ensure the features attribute is well-formed and has a
+ * consistent organization. For Polygon objects, it discards duplicate
+ * points, closes open paths and ensures clockwise winding order. It
+ * combines Geometry objects so there is at most one of each geometry
+ * type: Polygon/MultiPolygon, Point/MultiPoint and
  * LineString/MultiLineString. 
  *
  * The `createGeoIndex()` method should be invoked to ensure the index
- * is created. Typically, after the startup lifecycle phase.
+ * is created. Typically, you do this after the startup lifecycle phase.
  *
  * Configuration is through these model properties:
- * *   `geometryField` (string) - Name of the primary GeoJSON field (default is `geo`).
- * *   `geometryFeatureField` (string) - Name of the geometry features field (default is `geoFeatures`).
- * Both of these fields must also be defined as model attributes with
+ * *   `geometryField` (string) - Name of the primary GeoJSON attribute (default is `geo`).
+ * *   `geometryFeatureField` (string) - Name of the geometry features attribute (default is `geoFeatures`).
+ * Both of these attributes must also be defined as model attributes with
  * type `json`.
+ *
+ * Use the `extend()` method to create a Waterline model based on
+ * `GeoModel`. For example:
+ * ```
+ *   import {GeoModel} from 'nxus-storage'
+ *   const MyGeo = GeoModel.extend({
+ *       identity: 'my-geo',
+ *       attributes: {
+ *           ...
+ *           location: 'json',
+ *           locationFeatures: 'json'
+ *       },
+ *       geometryField: 'location',
+ *       geometryFeaturesField: 'locationFeatures'
+ *   })
+ * ```
+ *
+ * @augments BaseModel
  */
 const GeoModel = BaseModel.extend(
   /** @lends GeoModel */
@@ -181,13 +201,13 @@ const GeoModel = BaseModel.extend(
     beforeCreate: extractGeometryFeatures,
     beforeUpdate: extractGeometryFeatures,
 
-    /** Ensures index is defined for geographic field.
-     * (Actually, on the field specified by `geometryFeatureField`.)
+    /** Ensures index is defined for geographic attribute.
+     * (Actually, on the attribute specified by `geometryFeatureField`.)
      * @returns {Promise} A promise that resolves or rejects when index
      *   creation completes. It's worthwhile attaching a `.catch()`
      *   clause to this promise to log errors; index creation can fail
      *   for a variety of reasons, including invalid data in the
-     *   geometry feature field.
+     *   geometry feature attribute.
      */
     createGeoIndex: function() {
       return new Promise((resolve, reject) => {
@@ -248,10 +268,10 @@ const GeoModel = BaseModel.extend(
       return this._geoFind('$geoIntersects', coordinates)
     },
 
-    /** Gets GeoJSON geometry object from the GeoJSON geographic field.
+    /** Gets GeoJSON geometry object from the GeoJSON geographic attribute.
      * Typical use is to extract `Polygon` geometry objects for use as
      * coordinates for the `findWithin()` or `findIntersects()` methods.
-     * @param {Object} record - `GeoModel` record containing geographic field
+     * @param {Object} record - `GeoModel` record containing geographic attribute
      * @param {...string} types - geometry types to include (default is
      *   all types: `Polygon`, `Point` and `LineString`)
      * @returns {Object} GeoJSON geometry object; undefined if no
@@ -270,8 +290,8 @@ const GeoModel = BaseModel.extend(
       return geo
     },
 
-    /** Gets the centroid of the GeoJSON geographic field.
-     * @param {Object} record - `GeoModel` record containing geographic field
+    /** Gets the centroid of the GeoJSON geographic attribute.
+     * @param {Object} record - `GeoModel` record containing geographic attribute
      * @returns {Object} GeoJSON Point object; undefined if no
      *   geometry objects were present from which to derive a centroid
      */
