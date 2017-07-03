@@ -164,6 +164,16 @@ can configure to load models defined by your module or other modules.
               each array element specifies a model – the element
               string serves as both model identity and name. (optional, default `null`)
 
+### models
+
+Collection of model definitions.
+You can use the constructor `modelNames` option to configure which
+model definitions to load. By default, the model definitions
+that were registered from the module `./models` subdirectory are
+also loaded into the model definitions.
+
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
 ### modelNames
 
 Override to define the model names to access.
@@ -182,16 +192,6 @@ Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 -   **deprecated**: Use the constructor `modelNames` option to specify names of models to be made available in the `this.models` property.
 
-
-### models
-
-Collection of model definitions.
-You can use the constructor `modelNames` option to configure which
-model definitions to load. By default, the model definitions
-that were registered from the module `./models` subdirectory are
-also loaded into the model definitions.
-
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 ## BaseModel
 
@@ -543,13 +543,13 @@ moderate size.
 **Examples**
 
 ````javascript
-            ```
-              model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
-                return query().where(...).populate(...)
-              }).then((records) => {
-                ...
-              })
-              ```
+                    ```
+                      model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+                        return query().where(...).populate(...)
+                      }).then((records) => {
+                        ...
+                      })
+                      ```
 ````
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
