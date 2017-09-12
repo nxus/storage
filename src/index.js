@@ -34,18 +34,16 @@ class Storage extends NxusModule {
     this.connections = null;
     this._adapters = {}
 
-    application.once('init', () => {
-      return Promise.all([
-        this._setupAdapter(),
-      ]);
+    this._configured = application.once('init', () => {
+      return this._setupAdapter()
     });
 
     application.onceAfter('load', () => {
-      return this._connectDb();
+      return this._connectDb()
     });
 
     application.once('stop', () => {
-      return this._disconnectDb();
+      return this._disconnectDb()
     })
   }
 
@@ -120,6 +118,18 @@ class Storage extends NxusModule {
     });
   }
 
+  /**
+   * After init, get the waterline config with populated adapter modules
+   * @return {Promise}  Config object for waterline
+   */
+  async getWaterlineConfig() {
+    await this._configured
+    return {
+      adapters: this._adapters,
+      connections: this.config.connections
+    }
+  }
+  
   // Internal
   
   _setupAdapter () {
