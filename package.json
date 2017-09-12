@@ -37,7 +37,8 @@
     "connect-waterline": "^0.1.0",
     "express-session": "^1.15.5",
     "geojson-rewind": "^0.2.0",
-    "nxus-core": "^4.0.0-0",
+    "nxus-core": "^4.0.1",
+    "nxus-router": "^4.0.0",
     "underscore": "^1.8.3",
     "waterline": "^0.12.2",
     "waterline-sqlite3": "1.0.3"
