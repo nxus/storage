@@ -3,6 +3,21 @@ import RouterSessions from 'nxus-router/lib/modules/router-sessions'
 var session = require('express-session');
 var WaterlineStore = require('connect-waterline')(session);
 
+/**
+ * WaterlineSessions provides a `nxus-router` session middleware using `connect-waterline`
+ * 
+ * The session model will be saved in your configured 'default' database connection.
+ * 
+ * ## Usage:
+ * 
+ *  Application config (.nxusrc) for router:
+ * 
+ *    "router": {
+ *      "sessionStoreName": "waterline-session"
+ *    }
+ * 
+ */
+
 class WaterlineSessions extends RouterSessions {
 
   _defaultConfig() {
