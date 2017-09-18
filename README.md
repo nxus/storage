@@ -143,6 +143,12 @@ application.get('storage').model(...)
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Array of model identities
 
+### getWaterlineConfig
+
+After init, get the waterline config with populated adapter modules
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Config object for waterline
+
 ## HasModels
 
 **Extends NxusModule**
@@ -543,13 +549,13 @@ moderate size.
 **Examples**
 
 ````javascript
-                    ```
-                      model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
-                        return query().where(...).populate(...)
-                      }).then((records) => {
-                        ...
-                      })
-                      ```
+                            ```
+                              model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+                                return query().where(...).populate(...)
+                              }).then((records) => {
+                                ...
+                              })
+                              ```
 ````
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
