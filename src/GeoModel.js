@@ -3,10 +3,9 @@ import Promise from 'bluebird'
 
 import _ from "underscore"
 import rewind from 'geojson-rewind'
-import turf from '@turf/meta'
-import turfCentroid from '@turf/centroid'
-
-var turfCentroidFunc = turfCentroid
+import * as turfMeta from '@turf/meta'
+import {default as turfCentroid} from '@turf/centroid'
+const turf = Object.assign({centroid: turfCentroid}, turfMeta)
 
 /** Cleans up polygon coordinates.
  * For each linear ring that defines the polygon, it removes repeated
@@ -300,7 +299,7 @@ const GeoModel = BaseModel.extend(
       let val = record[this.geometryFeatureField], geo
       if (val) {
         try {
-          let feature = turfCentroidFunc(val)
+          let feature = turf.centroid(val)
           geo = feature.geometry
         }
         catch (e) {}
