@@ -3,5 +3,8 @@
 .npmignore
 .tmp
 .travis.yml
+docs
+documentation.yml
+introduction.md
 src
 test
