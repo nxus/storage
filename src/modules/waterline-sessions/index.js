@@ -1,5 +1,9 @@
 import {application} from 'nxus-core'
 import RouterSessions from 'nxus-router/lib/modules/router-sessions'
+import waterline from 'waterline'
+import {defaultModelDefinition} from 'connect-waterline'
+import Promise from 'bluebird'
+
 var session = require('express-session');
 var WaterlineStore = require('connect-waterline')(session);
 
@@ -33,14 +37,20 @@ class WaterlineSessions extends RouterSessions {
   }
   
   async _createStore(settings) {
+    let wl = Promise.promisifyAll(new waterline());
     let config = await application.get('storage').getWaterlineConfig()
+    let connection = config.connections[this.config.connectionName]
     let options = {
       adapters: config.adapters,
       connections: {
-        'connect-waterline': config.connections[this.config.connectionName]
-      }
+        'connect-waterline': connection
+      },
+      defaults: { migrate: 'safe'}
     }
-    return new WaterlineStore(options)
+    wl.loadCollection(waterline.Collection.extend(defaultModelDefinition));    
+    let res = await wl.initializeAsync(options)
+    
+    return new WaterlineStore({model: res.collections.sessions})
   }
 }
 
