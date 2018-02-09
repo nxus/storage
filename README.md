@@ -438,6 +438,22 @@ Base collection for Waterline models containing a GeoJSON coordinate point attri
 -   **deprecated**: Use [GeoModel](#geomodel).
 
 
+## WaterlineSessions
+
+**Extends RouterSessions**
+
+WaterlineSessions provides a `nxus-router` session middleware using `connect-waterline`
+
+The session model will be saved in your configured 'default' database connection.
+
+## Usage:
+
+ Application config (.nxusrc) for router:
+
+   "router": {
+     "sessionStoreName": "waterline-session"
+   }
+
 # Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** extended Waterline model definition
 
 ### BaseModel
@@ -549,13 +565,13 @@ moderate size.
 **Examples**
 
 ````javascript
-                                                        ```
-                                                          model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
-                                                            return query().where(...).populate(...)
-                                                          }).then((records) => {
-                                                            ...
-                                                          })
-                                                          ```
+                                                                    ```
+                                                                      model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+                                                                        return query().where(...).populate(...)
+                                                                      }).then((records) => {
+                                                                        ...
+                                                                      })
+                                                                      ```
 ````
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that

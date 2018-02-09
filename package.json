@@ -10,9 +10,9 @@
     "compile": "rm -rf lib/; babel src --out-dir lib",
     "prepublish": "npm run compile",
     "postpublish": "npm run build-docs && npm run publish-docs",
-    "build-docs": "NAME=\"$(npm view . name)\" VERSION=\"$(npm view . version)\" && documentation readme --readme-file ./README.md --section=$NAME --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js",
+    "build-docs": "NAME=\"$(npm view . name)\" VERSION=\"$(npm view . version)\" && documentation readme --readme-file ./README.md --section=$NAME --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js ./src/modules/waterline-sessions/index.js",
     "publish-docs": "npm run build-docs && if [ -z `git diff --name-only ./README.md` ]; then exit 0; fi && git add ./README.md && git commit -m 'Updated README API Docs' && git push",
-    "build-shared-docs": "NAME=\"${NAME:-$npm_package_name}\" VERSION=\"${VERSION:-$npm_package_version}\" OUTPUT=\"${OUTPUT:-./docs}\" && echo documentation build --output $OUTPUT --github --format html --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js"
+    "build-shared-docs": "NAME=\"${NAME:-$npm_package_name}\" VERSION=\"${VERSION:-$npm_package_version}\" OUTPUT=\"${OUTPUT:-./docs}\" && echo documentation build --output $OUTPUT --github --format html --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js ./src/modules/waterline-sessions/index.js"
   },
   "repository": {
     "type": "git",
