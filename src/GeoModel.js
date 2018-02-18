@@ -309,7 +309,7 @@ const GeoModel = BaseModel.extend(
     },
 
     findNear(coordinates, radius) {
-      let centroid = this._getCenterOfMass(coordinates)
+      let centroid = this.getCenterOfMass(coordinates)
       if(centroid)
         return this._geoFind('$near', centroid, {'$maxDistance': radius})
       else
