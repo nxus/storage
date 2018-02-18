@@ -310,7 +310,6 @@ const GeoModel = BaseModel.extend(
 
     findNear(coordinates, radius) {
       let centroid = this._getCenterOfMass(coordinates)
-      console.log(centroid)
       if(centroid)
         return this._geoFind('$near', centroid, {'$maxDistance': radius})
       else
@@ -327,7 +326,7 @@ const GeoModel = BaseModel.extend(
       return geo
     },
 
-    _geoFind (op, coordinates, opts) {
+    _geoFind (op, coordinates, opts = {}) {
       let geoQuery = { [this.geometryFeatureField]: { [op]: {$geometry: coordinates, ...opts} } }
       return new Promise((resolve, reject) => {
         this.native((err, collection) => {
