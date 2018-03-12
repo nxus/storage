@@ -106,6 +106,55 @@ describe("Storage", () => {
     
 
   });
+  describe("Model Dupes", () => {
+    beforeEach(() => {
+      storage.config = {
+        adapters: {
+          "default": "sails-memory"
+        },
+        connections: {
+          'default': {
+            adapter: 'default'
+          }
+        }
+      }
+      
+      var Dummy = BaseModel.extend({
+        identity: 'dummy',
+        connection: 'default',
+        attributes: {
+          name: 'string'
+        }
+      });
+
+      // Shortcut around gather stub
+      storage.model(Dummy)
+      // Register twice is ok
+      storage.model(Dummy)
+      storage._setupAdapter()
+      return storage._connectDb()
+    });
+
+    afterEach(() => {
+      return storage._disconnectDb()
+    })
+
+    it("should have a collection of models", () => {
+      storage.collections.should.not.be.null;
+      storage.connections.should.not.be.null;
+      storage.collections.should.have.property('dummy');
+    });
+    it("should return model by identity", () => {
+      var dummy = storage.getModel('dummy')
+      dummy.should.exist
+      dummy.identity.should.equal('dummy')
+      return dummy.create({name:"test"}).then((obj) => {
+        obj.name.should.equal("test")
+      })
+    });
+    
+
+  });
   describe("Model Dir", () => {
     beforeEach(() => {
       storage.config = {

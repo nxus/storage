@@ -33,6 +33,7 @@ class Storage extends NxusModule {
     this.collections = {};
     this.connections = null;
     this._adapters = {}
+    this._collections = {}
 
     this._configured = application.once('init', () => {
       return this._setupAdapter()
@@ -70,7 +71,7 @@ class Storage extends NxusModule {
   
   model (model) {
     this.log.debug('Registering model', model.prototype.identity)
-    this.waterline.loadCollection(model)
+    this._collections[model.prototype.identity] = model
   }
 
   /**
@@ -175,7 +176,8 @@ class Storage extends NxusModule {
     return this.waterline.initializeAsync({
       adapters: this._adapters,
       connections: this.config.connections,
-      defaults: this.config.defaults
+      defaults: this.config.defaults,
+      collections: Object.values(this._collections)
     }).then((obj) => {
       this.connections = obj.connections;
       this.collections = obj.collections;
