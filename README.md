@@ -103,7 +103,7 @@ Register a model
 
 **Parameters**
 
--   `model` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A Waterline-compatible model class
+-   `model` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A Waterline-compatible model class
 
 **Examples**
 
@@ -117,7 +117,7 @@ Request a model based on its identity (name)
 
 **Parameters**
 
--   `id` **([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array))** The identity of a registered model, or array of identities
+-   `id` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array))** The identity of a registered model, or array of identities
 
 **Examples**
 
@@ -125,7 +125,7 @@ Request a model based on its identity (name)
 storage.getModel('user')
 ```
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** The model class(es)
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** The model class(es)
 
 ### modelDir
 
@@ -133,7 +133,7 @@ Register all models in a directory
 
 **Parameters**
 
--   `dir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Directory containing model files
+-   `dir` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Directory containing model files
 
 **Examples**
 
@@ -141,13 +141,13 @@ Register all models in a directory
 application.get('storage').model(...)
 ```
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Array of model identities
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Array of model identities
 
 ### getWaterlineConfig
 
 After init, get the waterline config with populated adapter modules
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Config object for waterline
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Config object for waterline
 
 ## HasModels
 
@@ -161,24 +161,14 @@ can configure to load models defined by your module or other modules.
 
 **Parameters**
 
--   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Configuration options. (optional, default `{}`)
-    -   `options.modelNames` **([Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array))** Model definitions to load.
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Configuration options. (optional, default `{}`)
+    -   `options.modelNames` **([Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array))** Model definitions to load.
               If specified as an object, each object property specifies a
               model – its key is a model identity (the model's
               `identity` property), and its value is used as the model's
               name in [HasModels#models](#hasmodelsmodels). If specified as an array,
               each array element specifies a model – the element
               string serves as both model identity and name. (optional, default `null`)
-
-### models
-
-Collection of model definitions.
-You can use the constructor `modelNames` option to configure which
-model definitions to load. By default, the model definitions
-that were registered from the module `./models` subdirectory are
-also loaded into the model definitions.
-
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 ### modelNames
 
@@ -192,12 +182,22 @@ modelNames() {
 }
 ```
 
-Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))** Model identities to add to `this.models`, or object of {identity: name}
+Returns **([Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) \| [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** Model identities to add to `this.models`, or object of {identity: name}
 
 **Meta**
 
 -   **deprecated**: Use the constructor `modelNames` option to specify names of models to be made available in the `this.models` property.
 
+
+### models
+
+Collection of model definitions.
+You can use the constructor `modelNames` option to configure which
+model definitions to load. By default, the model definitions
+that were registered from the module `./models` subdirectory are
+also loaded into the model definitions.
+
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 ## BaseModel
 
@@ -241,7 +241,7 @@ definition examines the record's `id`, `createdAt`, and
 value. Override the default definition to provide a more useful
 display name.
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** display name
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** display name
 
 ### connection
 
@@ -256,10 +256,10 @@ Finds a record if it exists, creates it if not.
 
 **Parameters**
 
--   `criteria` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** search criteria
--   `values` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** attributes of the new record, if created
+-   `criteria` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** search criteria
+-   `values` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** attributes of the new record, if created
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** existing or newly created record
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** existing or newly created record
 
 ### createOrUpdate
 
@@ -267,10 +267,10 @@ Creates a record if it doesn't exist, updates it if it does.
 
 **Parameters**
 
--   `criteria` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** search criteria
--   `values` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** record attributes
+-   `criteria` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** search criteria
+-   `values` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** record attributes
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** newly created or updated record
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** newly created or updated record
 
 ### extend
 
@@ -278,11 +278,11 @@ Extends this model definition to create a new definition.
 
 **Parameters**
 
--   `properties` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** prototype properties for the created
+-   `properties` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** prototype properties for the created
       model; the `attributes` property, if specified, augments (rather
       than replaces) the attributes of the model being extended
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** extended Waterline model definition
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** extended Waterline model definition
 
 ## GeoModel
 
@@ -340,7 +340,7 @@ Use the `extend()` method to create a Waterline model based on
 Ensures index is defined for geographic attribute.
 (Actually, on the attribute specified by `geometryFeatureField`.)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves or rejects when index
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves or rejects when index
   creation completes. It's worthwhile attaching a `.catch()`
   clause to this promise to log errors; index creation can fail
   for a variety of reasons, including invalid data in the
@@ -369,7 +369,7 @@ moderate size.
 
 **Parameters**
 
--   `coordinates` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
+-   `coordinates` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
       specifying the geographic region to select; it must be of type
       `Polygon` or `MultiPolygon`.
 
@@ -385,7 +385,7 @@ moderate size.
       ```
 ````
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
   returns a Waterline query for the specified coordinates.
 
 ### findIntersects
@@ -394,10 +394,10 @@ Finds records intersecting specified geographic coordinates.
 
 **Parameters**
 
--   `coordinates` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
+-   `coordinates` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
       specifying the geographic region to select.
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
   returns a Waterline query for the specified coordinates. See
   `findWithin()` for further explanation.
 
@@ -409,11 +409,11 @@ coordinates for the `findWithin()` or `findIntersects()` methods.
 
 **Parameters**
 
--   `record` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** `GeoModel` record containing geographic attribute
--   `types` **...[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** geometry types to include (default is
+-   `record` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** `GeoModel` record containing geographic attribute
+-   `types` **...[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** geometry types to include (default is
       all types: `Polygon`, `Point` and `LineString`)
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** GeoJSON geometry object; undefined if no
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** GeoJSON geometry object; undefined if no
   matching geometry objects were present
 
 ### getCentroid
@@ -422,9 +422,9 @@ Gets the centroid of the GeoJSON geographic attribute.
 
 **Parameters**
 
--   `record` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** `GeoModel` record containing geographic attribute
+-   `record` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** `GeoModel` record containing geographic attribute
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** GeoJSON Point object; undefined if no
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** GeoJSON Point object; undefined if no
   geometry objects were present from which to derive a centroid
 
 ## PointModel
@@ -453,6 +453,61 @@ The session model will be saved in your configured 'default' database connection
    "router": {
      "sessionStoreName": "waterline-session"
    }
+
+## findWithin
+
+Finds records within specified geographic coordinates.
+
+The method goes through some odd gyrations in order to mesh the
+MongoDB geographic query with Waterline query handling.
+
+First, it _indirectly_ returns a Waterline query, by returning a
+promise that resolves to a function that evaluates to the query.
+This due to the fact that the query has promise semantics.
+Returning it indirectly defers evaluation, allowing you to refine
+it (using the chainable methods such as .populate()`,`.where()`,
+and`.sort()\`) before evaluating it.
+
+Second, it actually evaluates the MongoDB geographic query to
+produce a list of matching record ids, and the returned Waterline
+query is a second query based on these ids. Again, this to allow
+you to refine the query before evaluation. Be aware that this
+won't scale well to huge record sets, but should work for any of
+moderate size.
+
+**Parameters**
+
+-   `coordinates` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
+      specifying the geographic region to select; it must be of type
+      `Polygon` or `MultiPolygon`.
+
+**Examples**
+
+````javascript
+    ```
+      model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+        return query().where(...).populate(...)
+      }).then((records) => {
+        ...
+      })
+      ```
+````
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
+  returns a Waterline query for the specified coordinates.
+
+## findIntersects
+
+Finds records intersecting specified geographic coordinates.
+
+**Parameters**
+
+-   `coordinates` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A GeoJSON geometry object
+      specifying the geographic region to select.
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
+  returns a Waterline query for the specified coordinates. See
+  `findWithin()` for further explanation.
 
 # Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** extended Waterline model definition
 
@@ -565,13 +620,13 @@ moderate size.
 **Examples**
 
 ````javascript
-                                                                    ```
-                                                                      model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
-                                                                        return query().where(...).populate(...)
-                                                                      }).then((records) => {
-                                                                        ...
-                                                                      })
-                                                                      ```
+                                                                                ```
+                                                                                  model.findWithin({ 'type': 'Polygon', 'coordinates': ... }).then((query) => {
+                                                                                    return query().where(...).populate(...)
+                                                                                  }).then((records) => {
+                                                                                    ...
+                                                                                  })
+                                                                                  ```
 ````
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise that resolves to a function that
