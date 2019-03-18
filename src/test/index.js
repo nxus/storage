@@ -23,7 +23,7 @@ describe("Storage", () => {
   })
 
   //nb: these tests are order dependent right now
- 
+
   describe("Load", () => {
     it("should not be null", () => Storage.should.not.be.null)
     it("should provide waterline", () => Waterline.should.not.be.null)
@@ -74,7 +74,7 @@ describe("Storage", () => {
           }
         }
       }
-      
+
       var Dummy = BaseModel.extend({
         identity: 'dummy',
         connection: 'default',
@@ -103,7 +103,7 @@ describe("Storage", () => {
       dummy.should.exist
       dummy.identity.should.equal('dummy')
     });
-    
+
 
   });
   describe("Model Dir", () => {
@@ -125,7 +125,7 @@ describe("Storage", () => {
     afterEach(() => {
       return storage._disconnectDb()
     })
-    
+
     it("should register local models", () => {
       return storage.modelDir(__dirname+"/models").then((ids) => {
         storage.provide.calledTwice.should.be.true
@@ -135,8 +135,15 @@ describe("Storage", () => {
         ids.includes('two').should.be.true
       })
     });
+
+    it("should throw an error on on invalid models", () => {
+      return storage.modelDir(__dirname+"/error-models").catch((e) => {
+        e.should.not.be.null
+        e.message.should.equal('Module file missing export (empty file?) Empty.js')
+      })
+    });
   });
-  
+
   describe("Dynamic Adapter", () => {
     beforeEach(() => {
       storage.config = {
