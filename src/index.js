@@ -25,7 +25,7 @@ const REGEX_FILE = /[^\/\~]$/;
  * Storage provides a common interface for defining models.  Uses the Waterline ORM.
  */
 class Storage extends NxusModule {
-  
+
   constructor () {
     super()
 
@@ -56,7 +56,7 @@ class Storage extends NxusModule {
       },
       connections: {
         'default': {
-          adapter: 'default', // or 'memory' 
+          adapter: 'default', // or 'memory'
         }
       }
     };
@@ -69,7 +69,7 @@ class Storage extends NxusModule {
    * @param {object} model A Waterline-compatible model class
    * @example storage.model(...)
    */
-  
+
   model (model) {
     this.log.debug('Registering model', model.prototype.identity)
     this.waterline.loadCollection(model)
@@ -81,7 +81,7 @@ class Storage extends NxusModule {
    * @return {Promise}  The model class(es)
    * @example storage.getModel('user')
    */
-  
+
   getModel (id) {
     if (_.isArray(id)) {
       return id.map((i) => { return this.collections[i]})
@@ -95,7 +95,7 @@ class Storage extends NxusModule {
    * @return {Promise}  Array of model identities
    * @example application.get('storage').model(...)
    */
-  
+
   modelDir (dir) {
     try {
       fs.accessSync(dir);
@@ -111,13 +111,15 @@ class Storage extends NxusModule {
         if (m.default) {
           m = m.default
         }
+        if(!m.prototype) throw new Error('Module file missing export (empty file?) '+file)
+        if(!m.prototype.identity) throw new Error('Module file missing waterline identity'+file)
         identities.push(m.prototype.identity)
         this.log.debug('modelDir adding model', file)
         return this.provide('model', m)
       }
     }).then(() => {
       return identities
-    });
+    })
   }
 
   /**
@@ -131,9 +133,9 @@ class Storage extends NxusModule {
       connections: this.config.connections
     }
   }
-  
+
   // Internal
-  
+
   _setupAdapter () {
     for (var key in this.config.adapters) {
       if (_.isString(this.config.adapters[key])) {
@@ -142,8 +144,8 @@ class Storage extends NxusModule {
           adapter['_name'] = this.config.adapters[key]
           this._adapters[key] = adapter;
         } catch (err) {
-          this.log.error('_setupAdapter config for', key, 
-            'adapter:', this.config.adapters[key], 
+          this.log.error('_setupAdapter config for', key,
+            'adapter:', this.config.adapters[key],
             'not found in installed dependencies.' )
         }
       }
@@ -171,7 +173,7 @@ class Storage extends NxusModule {
       })
     });
   }
-  
+
   _connectDb () {
     this.log.debug('Connecting to dB', this.config.connections)
     return this.waterline.initializeAsync({
