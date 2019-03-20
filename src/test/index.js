@@ -8,8 +8,8 @@ import {Waterline, BaseModel} from '../'
 import sinon from 'sinon'
 import {application as app} from 'nxus-core'
 
-import One from './models/One'
-import Two from './models/Two'
+import One from './model/One'
+import Two from './model/Two'
 
 
 describe("Storage", () => {
@@ -127,7 +127,7 @@ describe("Storage", () => {
     })
 
     it("should register local models", () => {
-      return storage.modelDir(__dirname+"/models").then((ids) => {
+      return storage.modelDir(__dirname+"/model").then((ids) => {
         storage.provide.calledTwice.should.be.true
         storage.provide.calledWith('model').should.be.true
         ids.length.should.equal(2)

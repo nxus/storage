@@ -101,7 +101,7 @@ class Storage extends NxusModule {
       fs.accessSync(dir);
     } catch (e) {
       this.log.debug('modelDir skipping:', dir, e.message)
-      return;
+      return [];
     }
     let identities = []
     return fs.readdirAsync(dir).each((file) => {
