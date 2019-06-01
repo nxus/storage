@@ -8,8 +8,7 @@
     "postversion": "npm run build-docs && git push && git push --tags",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register -R spec src/**/*",
     "compile": "rm -rf lib/; babel src --out-dir lib",
-    "prepublish": "npm run compile",
-    "postpublish": "npm run build-docs && npm run publish-docs",
+    "prepare": "npm run compile",
     "build-docs": "NAME=\"$(npm view . name)\" VERSION=\"$(npm view . version)\" && documentation readme --readme-file ./README.md --section=$NAME --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js ./src/modules/waterline-sessions/index.js",
     "publish-docs": "npm run build-docs && if [ -z `git diff --name-only ./README.md` ]; then exit 0; fi && git add ./README.md && git commit -m 'Updated README API Docs' && git push",
     "build-shared-docs": "NAME=\"${NAME:-$npm_package_name}\" VERSION=\"${VERSION:-$npm_package_version}\" OUTPUT=\"${OUTPUT:-./docs}\" && echo documentation build --output $OUTPUT --github --format html --name $NAME --project-version $VERSION --config documentation.yml ./src/index.js ./src/PointModel.js ./src/modules/waterline-sessions/index.js"
@@ -40,8 +39,7 @@
     "nxus-core": "^4.0.1",
     "nxus-router": "^4.0.0",
     "underscore": "^1.8.3",
-    "waterline": "^0.12.2",
-    "waterline-sqlite3": "1.0.3"
+    "waterline": "^0.12.2"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

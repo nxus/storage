@@ -50,8 +50,9 @@ describe("Storage", () => {
       return app.emit('init').then(() => {
         return app.emit('load')
       }).then(() => {
-        storage._adapters.should.have.property('default');
+        storage.should.have.property('_adapters');
         storage.should.have.property('config');
+        storage.config.should.have.property('adapters');
         storage.config.should.have.property('connections');
         storage.should.have.property('connections');
         storage.connections.should.not.be.null
