@@ -183,7 +183,7 @@ function extractGeometryFeatures(values, next) {
  *           locationFeatures: 'json'
  *       },
  *       geometryField: 'location',
- *       geometryFeaturesField: 'locationFeatures'
+ *       geometryFeatureField: 'locationFeatures'
  *   })
  * ```
  *
