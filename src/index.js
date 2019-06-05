@@ -52,12 +52,8 @@ class Storage extends NxusModule {
   _userConfig () {
     return {
       adapters: {
-        'default': "waterline-sqlite3"
       },
       connections: {
-        'default': {
-          adapter: 'default', // or 'memory'
-        }
       }
     };
   }
