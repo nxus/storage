@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/nxus/storage",
   "dependencies": {
+    "@turf/center-of-mass": "^5.1.5",
     "@turf/centroid": "^4.2.0",
     "@turf/meta": "^4.2.0",
     "bluebird": "^3.0.6",

@@ -276,6 +276,10 @@ describe("Storage", () => {
         [ 4, 5 ],
         null ]
 
+      const nearMaps = [
+        [0, 1]
+      ]
+
       beforeEach(() => {
         geo = storage.getModel('geo')
         return Promise.mapSeries(records, (record) => {
@@ -312,6 +316,25 @@ describe("Storage", () => {
             expect(coordinates).to.not.exist
           else {
             return geo.findWithin(coordinates).then((query) => {
+              return query().then((rslts) => {
+                expect(rslts).to.be.instanceof(Array)
+                rslts.should.have.property('length', rsltMap.length)
+                for (let i = 0; i < rsltMap.length; i += 1)
+                  rslts[i].should.deep.equal(objs[rsltMap[i]])
+              })
+            })
+          }
+        })
+      })
+
+      it("findNear() should find nearby records", () => {
+        return Promise.each([objs[0]], (obj, idx) => {
+          let coordinates = geo.getGeometry(obj, 'Polygon'),
+              rsltMap = nearMaps[idx]
+          if (!rsltMap)
+            expect(coordinates).to.not.exist
+          else {
+            return geo.findNear(coordinates, 100000).then((query) => {
               return query().then((rslts) => {
                 expect(rslts).to.be.instanceof(Array)
                 rslts.should.have.property('length', rsltMap.length)

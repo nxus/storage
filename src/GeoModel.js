@@ -5,7 +5,8 @@ import _ from "underscore"
 import rewind from 'geojson-rewind'
 import * as turfMeta from '@turf/meta'
 import {default as turfCentroid} from '@turf/centroid'
-const turf = Object.assign({centroid: turfCentroid}, turfMeta)
+import {default as turfCenterOfMass} from '@turf/center-of-mass'
+const turf = Object.assign({centroid: turfCentroid, centerOfMass: turfCenterOfMass}, turfMeta)
 
 /** Cleans up polygon coordinates.
  * For each linear ring that defines the polygon, it removes repeated
@@ -307,8 +308,26 @@ const GeoModel = BaseModel.extend(
       return geo
     },
 
-    _geoFind: function(op, coordinates) {
-      let geoQuery = { [this.geometryFeatureField]: { [op]: {$geometry: coordinates} } }
+    findNear(coordinates, radius) {
+      let centroid = this.getCenterOfMass(coordinates)
+      if(centroid)
+        return this._geoFind('$near', centroid, {'$maxDistance': radius})
+      else
+        return null
+    },
+
+    getCenterOfMass (coordinates) {
+      let geo
+      try {
+        let feature = turf.centerOfMass(coordinates)
+        geo = feature.geometry
+      }
+      catch (e) {}
+      return geo
+    },
+
+    _geoFind (op, coordinates, opts = {}) {
+      let geoQuery = { [this.geometryFeatureField]: { [op]: {$geometry: coordinates, ...opts} } }
       return new Promise((resolve, reject) => {
         this.native((err, collection) => {
           if(err) { reject(err); return }
