@@ -14,6 +14,7 @@ import Two from './model/Two'
 
 describe("Storage", () => {
   var storage;
+  var storageProvideSpy, storageEmitSpy
 
   before(() => {
     sinon.spy(app, "once")
@@ -41,6 +42,10 @@ describe("Storage", () => {
   });
 
   describe("Init", () => {
+    before(() => {
+      storageProvideSpy = sinon.spy(storage, 'provide')
+      storageEmitSpy = sinon.spy(storage, 'emit')
+    })
     it("should register for app lifecycle", () => app.once.called.should.be.true)
     it("should register app init event", () => app.once.calledWith('init').should.be.true)
     it("should register app load event", () => app.onceAfter.calledWith('load').should.be.true)
@@ -60,10 +65,6 @@ describe("Storage", () => {
     }).timeout(3000);
   });
   describe("Models", () => {
-    before(() => {
-      sinon.spy(storage, 'provide')
-      sinon.spy(storage, 'emit')
-    })
     beforeEach(() => {
       storage.config = {
         adapters: {
@@ -276,7 +277,29 @@ describe("Storage", () => {
         storage.emit.calledWith('model.destroy').should.be.true
         storage.emit.calledWith('model.destroy.one').should.be.true
       })
-
     })
+
+    it("should handle a destroy that matches no instances", () => {
+      var one = storage.getModel('one')
+      storageEmitSpy.reset()
+      return one.destroy({color: 'red'}).then((objs) => {
+        objs.length.should.equal(0)
+        storage.emit.calledWith('model.destroy').should.be.false
+        storage.emit.calledWith('model.destroy.one').should.be.false
+      })
+    })
+    it("should handle a destroy that matches multiple instances", () => {
+      var one = storage.getModel('one')
+      return Promise.all([one.create({color: 'red'}), one.create({color: 'red'})]).then((objs) => {
+        storageEmitSpy.reset()
+        one.destroy({color: 'red'}).then((objs) => {
+          objs.length.should.equal(2)
+          storage.emit.callCount.should.equal(4)
+          storage.emit.calledWith('model.destroy').should.be.true
+          storage.emit.calledWith('model.destroy.one').should.be.true
+        })
+      })
+    })
+
   });
 });

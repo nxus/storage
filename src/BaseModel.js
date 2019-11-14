@@ -77,8 +77,8 @@ var BaseModel = Waterline.Collection.extend(
 
     afterDestroy: function(record, next) {
       if(this.storageModule) {
-        if(record && record[0]) record = record[0]
-        this.storageModule.emitModelEvent('destroy', this.identity, record)
+        for (let rec of record)
+          this.storageModule.emitModelEvent('destroy', this.identity, rec)
       }
       next()
     },
