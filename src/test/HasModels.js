@@ -20,13 +20,13 @@ describe("HasModels", () => {
     sinon.spy(app, "on")
   });
 
-  it("should modelDir ./models without error", () => {
+  it("should modelDir ./models without error", async () => {
     module = new MyModule()
-    return app.emit('load').then(() => {
-      storageProxy.provide.calledWith('modelDir').should.be.true;
-      module._model_identities.should.eql([])
-    })
-    
+    await app.emit('connect')
+    await app.emit('load')
+
+    storageProxy.provide.calledWith('modelDir').should.be.true
+    module._model_identities.should.eql([])
   });
   it("should request models", () => {
     module = new MyModule()
