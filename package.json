@@ -1,6 +1,6 @@
 {
   "name": "nxus-storage",
-  "version": "4.0.9",
+  "version": "4.0.10-0",
   "description": "Storage framework for Nxus applications",
   "main": "lib/",
   "scripts": {
@@ -39,7 +39,7 @@
     "nxus-core": "^4.0.1",
     "nxus-router": "^4.0.0",
     "underscore": "^1.8.3",
-    "waterline": "^0.12.2"
+    "waterline": "^0.13.6"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
