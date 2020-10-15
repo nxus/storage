@@ -41,7 +41,7 @@ class Storage extends NxusModule {
       return this._setupAdapter()
     });
 
-    application.onceAfter('load', () => {
+    application.once('connect', () => {
       return this._connectDb()
     });
 

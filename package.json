@@ -36,7 +36,7 @@
     "connect-waterline": "^0.1.0",
     "express-session": "^1.15.5",
     "geojson-rewind": "^0.2.0",
-    "nxus-core": "^4.0.1",
+    "nxus-core": "https://github.com/nxus/core.git#feature/boot-stages-build-connect",
     "nxus-router": "^4.0.0",
     "underscore": "^1.8.3",
     "waterline": "^0.13.6"
@@ -51,6 +51,7 @@
     "chai": "^3.4.1",
     "documentation": "^4.0.0-beta9",
     "mocha": "^3.3.0",
+    "mongodb-memory-server": "^2.2.0",
     "sails-memory": "^0.10.7",
     "sails-mongo": "^0.12.2",
     "sinon": "^1.17.2"

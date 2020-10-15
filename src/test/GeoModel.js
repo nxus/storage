@@ -5,6 +5,8 @@ import Promise from 'bluebird'
 import Storage from '../'
 import {GeoModel} from '../'
 
+import MongodbMemoryServer from 'mongodb-memory-server'
+
 import sinon from 'sinon'
 
 // example from RFC 7946, section 1.5 (deconstructed and reassembled)
@@ -75,12 +77,24 @@ const geoJSONMultiPolygon = { 'type': 'MultiPolygon',
 
 
 describe("Storage", () => {
-  var storage
+  var storage, mongod, mongoUri
 
-  before(() => {
+  before(async function() {
+    // this may download mongodb binary on first run
+    this.timeout(15000)
     storage = new Storage()
     sinon.spy(storage, 'provide')
     sinon.spy(storage, 'emit')
+
+    mongod = new MongodbMemoryServer({
+      instance: {
+        dbName: 'nxus-storage-test'
+      },
+      binary: {
+        version: '3.6.8'
+      }
+    })
+    mongoUri = await mongod.getConnectionString()
   })
  
   describe("Model Geo class", () => {
@@ -98,7 +112,7 @@ describe("Storage", () => {
     const record = {
       'location': geoJSON }
 
-    beforeEach(() => {
+    beforeEach(async () => {
       storage.config = {
         adapters: {
           "mongo": "sails-mongo"
@@ -106,7 +120,7 @@ describe("Storage", () => {
         connections: {
           'nxus-storage-test': {
             adapter: 'mongo',
-            url: 'mongodb://localhost/nxus-storage-test'
+            url: mongoUri
           }
         }
       }

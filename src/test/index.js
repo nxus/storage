@@ -48,21 +48,21 @@ describe("Storage", () => {
     })
     it("should register for app lifecycle", () => app.once.called.should.be.true)
     it("should register app init event", () => app.once.calledWith('init').should.be.true)
-    it("should register app load event", () => app.onceAfter.calledWith('load').should.be.true)
+    it("should register app connect event", () => app.once.calledWith('connect').should.be.true)
     it("should register app stop event", () => app.once.calledWith('stop').should.be.true)
     //fire both the init and load, then check state of internal configuration
-    it("should have config after application 'init' and 'load'", () => {
-      return app.emit('init').then(() => {
-        return app.emit('load')
-      }).then(() => {
-        storage.should.have.property('_adapters');
-        storage.should.have.property('config');
-        storage.config.should.have.property('adapters');
-        storage.config.should.have.property('connections');
-        storage.should.have.property('connections');
-        storage.connections.should.not.be.null
-      });
-    }).timeout(3000);
+    it("should have config after application 'init' and 'load'", async () => {
+      await app.emit('init')
+      await app.emit('connect')
+      await app.emit('load')
+
+      storage.should.have.property('_adapters');
+      storage.should.have.property('config');
+      storage.config.should.have.property('adapters');
+      storage.config.should.have.property('connections');
+      storage.should.have.property('connections');
+      storage.connections.should.not.be.null
+    })
   });
   describe("Models", () => {
     beforeEach(() => {
